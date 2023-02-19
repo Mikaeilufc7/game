@@ -1,0 +1,78 @@
+import pygame
+import random
+
+pygame.init()
+
+# تعریف اندازه صفحه بازی
+WIDTH = 800
+HEIGHT = 600
+
+# تعریف رنگ‌ها
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+
+# تعریف فونت
+font = pygame.font.Font(None, 36)
+
+# تعریف صفحه بازی
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Car Game")
+
+# تعریف خودرو
+car_image = pygame.image.load("car.png")
+car_rect = car_image.get_rect()
+car_rect.centerx = WIDTH // 2
+car_rect.bottom = HEIGHT - 10
+
+# تعریف مسیر
+road_image = pygame.image.load("road.png")
+road_rect = road_image.get_rect()
+road_rect.centerx = WIDTH // 2
+road_rect.top = 0
+
+# تعریف لیستی از ستون‌ها
+columns = []
+for i in range(3):
+    column = pygame.Surface((200, HEIGHT))
+    column.fill(WHITE)
+    column_rect = column.get_rect()
+    column_rect.left = i * (WIDTH // 3)
+    columns.append((column, column_rect))
+
+# تعریف سرعت و امتیاز
+speed = 5
+score = 0
+
+# حلقه‌ی اصلی بازی
+running = True
+while running:
+
+    # بررسی ورودی‌های کاربر
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # حرکت مسیر
+    road_rect.top += speed
+    if road_rect.top >= HEIGHT:
+        road_rect.top = -HEIGHT
+
+    # حرکت ستون‌ها
+    for column, column_rect in columns:
+        column_rect.top += speed
+        if column_rect.top >= HEIGHT:
+            column_rect.top = -HEIGHT
+            column_rect.left = random.randint(0, WIDTH-200)
+            score += 1
+
+    # بررسی برخورد با ستون‌ها
+    for column, column_rect in columns:
+        if car_rect.colliderect(column_rect):
+            running = False
+
+    # رسم تصاویر
+    screen.blit(road_image, road_rect)
+    for column, column_rect in columns:
+        screen.blit(column, column_rect)
+    screen
